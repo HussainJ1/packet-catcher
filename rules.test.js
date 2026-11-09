@@ -129,4 +129,44 @@
     assertEqual(R.overlaps({ x: 80, y: 600, w: 20, h: 20 }, paddle), false);
     assertEqual(R.overlaps({ x: 81, y: 600, w: 20, h: 20 }, paddle), true);
   });
+
+  // --- High score -----------------------------------------------------------
+  test('high score is replaced when the score beats it', () => {
+    assertEqual(R.updateHighScore(10, 11), 11);
+  });
+
+  test('high score is kept when the score is lower or equal', () => {
+    assertEqual(R.updateHighScore(10, 4), 10);
+    assertEqual(R.updateHighScore(10, 10), 10);
+  });
+
+  test('first game sets the high score from zero', () => {
+    assertEqual(R.updateHighScore(0, 3), 3);
+    assertEqual(R.updateHighScore(0, 0), 0);
+  });
+
+  test('stored high score is read back as a number', () => {
+    assertEqual(R.parseHighScore('42'), 42);
+    assertEqual(R.parseHighScore('0'), 0);
+  });
+
+  test('nothing stored yet gives 0', () => {
+    assertEqual(R.parseHighScore(null), 0);
+    assertEqual(R.parseHighScore(undefined), 0);
+    assertEqual(R.parseHighScore(''), 0);
+  });
+
+  test('garbled stored value gives 0', () => {
+    assertEqual(R.parseHighScore('abc'), 0);
+    assertEqual(R.parseHighScore('12abc'), 0);
+    assertEqual(R.parseHighScore('Infinity'), 0);
+  });
+
+  test('negative stored value gives 0', () => {
+    assertEqual(R.parseHighScore('-5'), 0);
+  });
+
+  test('fractional stored value is rounded down', () => {
+    assertEqual(R.parseHighScore('7.9'), 7);
+  });
 })();

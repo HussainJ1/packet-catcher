@@ -23,6 +23,24 @@
   const finalScoreEl = document.getElementById('final-score');
   const startBtn = document.getElementById('start-btn');
   const restartBtn = document.getElementById('restart-btn');
+  const bestEl = document.getElementById('best');
+  const startBestEl = document.getElementById('start-best');
+  const overMsgEl = document.getElementById('gameover-msg');
+
+  // --- High score storage -------------------------------------------------------
+  // Storage can be blocked (private windows, disabled site data). If so the
+  // game still works and the high score just lasts until the page closes.
+  const HIGH_SCORE_KEY = 'packetCatcher.highScore';
+  function loadHighScore() {
+    try { return R.parseHighScore(localStorage.getItem(HIGH_SCORE_KEY)); }
+    catch (e) { return 0; }
+  }
+  function saveHighScore(value) {
+    try { localStorage.setItem(HIGH_SCORE_KEY, String(value)); }
+    catch (e) { /* storage unavailable: keep it in memory only */ }
+  }
+  let highScore = loadHighScore();
+  let bestAtStart = highScore; // high score before the current game began
 
   // Sharp drawing on high-DPI screens while keeping 480x640 game units.
   const dpr = window.devicePixelRatio || 1;
@@ -62,6 +80,7 @@
     flashes = [];
     spawnTimer = 0.5;
     paddleX = (W - PADDLE_W) / 2;
+    bestAtStart = highScore;
     running = true;
     startScreen.hidden = true;
     overScreen.hidden = true;
@@ -72,6 +91,13 @@
   function endGame() {
     running = false;
     finalScoreEl.textContent = game.score;
+    if (game.score > bestAtStart) {
+      overMsgEl.textContent = 'New high score!';
+      overMsgEl.className = 'record';
+    } else {
+      overMsgEl.textContent = 'High score: ' + highScore;
+      overMsgEl.className = '';
+    }
     overScreen.hidden = false;
     restartBtn.focus();
   }
@@ -119,10 +145,21 @@
   // --- HUD --------------------------------------------------------------------
   let shownScore = -1;
   let shownLives = -1;
+  let shownBest = -1;
   function updateHud() {
     if (game.score !== shownScore) {
       scoreEl.textContent = game.score;
       shownScore = game.score;
+    }
+    const best = R.updateHighScore(highScore, game.score);
+    if (best !== highScore) {
+      highScore = best;
+      saveHighScore(highScore); // saved straight away, so closing mid-game keeps it
+    }
+    if (highScore !== shownBest) {
+      bestEl.textContent = highScore;
+      startBestEl.textContent = highScore;
+      shownBest = highScore;
     }
     if (game.lives !== shownLives) {
       const lost = R.CONFIG.startingLives - game.lives;

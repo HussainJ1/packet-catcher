@@ -54,9 +54,23 @@
     return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
   }
 
+  function updateHighScore(best, score) {
+    return Math.max(best, score);
+  }
+
+  // Turns a stored value (text, or null if nothing saved) into a safe
+  // whole number. Anything unusable becomes 0.
+  function parseHighScore(stored) {
+    if (stored === null || stored === undefined) return 0;
+    const n = Number(stored);
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return Math.floor(n);
+  }
+
   const PacketRules = {
     CONFIG, createGame, catchPacket, missPacket,
     fallSpeed, spawnInterval, pickPacketType, overlaps,
+    updateHighScore, parseHighScore,
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = PacketRules;

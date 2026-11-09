@@ -8,6 +8,7 @@ firewall paddle with the left and right arrow keys.
 - Red packet (X) caught: lose one of 5 lives
 - Packets that fall past: no effect
 - Packets fall faster, and appear more often, as your score rises
+- Your high score is remembered by the browser between visits
 
 ## Play
 Open `index.html` in a browser. No server, install or internet needed.
