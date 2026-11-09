@@ -58,6 +58,8 @@
   .overlay h2 { margin: 0; font-size: 28px; }
   .overlay p { margin: 0; color: var(--muted); }
   .overlay .final { color: var(--text); font-size: 20px; }
+  .overlay .record { color: var(--accent); font-size: 20px; font-weight: bold; }
+  .hud .best { color: var(--accent); }
   .overlay button {
     font: inherit;
     font-size: 18px;
@@ -79,6 +81,7 @@
   <h1>PACKET CATCHER</h1>
   <div class="hud" aria-live="polite">
     <span>Score: <strong id="score">0</strong></span>
+    <span class="best">Best: <strong id="best">0</strong></span>
     <span>Lives: <span id="lives" class="lives"></span></span>
   </div>
   <div class="stage">
@@ -89,6 +92,7 @@
       <p>Move the firewall with <strong>&larr;</strong> <strong>&rarr;</strong></p>
       <p><span style="color:var(--green)">Catch green packets</span> for points.<br>
          <span style="color:var(--red)">Avoid red packets</span>: each one costs a life.</p>
+      <p class="final">High score: <strong id="start-best">0</strong></p>
       <button id="start-btn" type="button">Start</button>
       <p>or press Enter</p>
     </div>
@@ -96,6 +100,7 @@
     <div id="gameover-screen" class="overlay" hidden>
       <h2>Game Over</h2>
       <p class="final">Final score: <strong id="final-score">0</strong></p>
+      <p id="gameover-msg"></p>
       <button id="restart-btn" type="button">Restart</button>
       <p>or press Enter</p>
     </div>
