@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Packet Catcher – Rules Tests</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, Consolas, monospace; background: #0b1220; color: #d6e2f0; margin: 24px; }
+  .pass { color: #4ade80; }
+  .fail { color: #f87171; }
+  #summary { font-weight: bold; font-size: 16px; margin-bottom: 12px; }
+  li { margin: 2px 0; }
+  pre { margin: 2px 0 6px 20px; color: #fca5a5; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div id="summary">Running…</div>
+<ul id="results"></ul>
+
+<script>
+  // Minimal test runner: no libraries.
+  const __tests = [];
+  function test(name, fn) { __tests.push({ name, fn }); }
+  function assert(cond, msg) { if (!cond) throw new Error(msg || 'assertion failed'); }
+  function assertEqual(actual, expected) {
+    if (actual !== expected) {
+      throw new Error('expected ' + JSON.stringify(expected) + ', got ' + JSON.stringify(actual));
+    }
+  }
+  window.addEventListener('error', (e) => {
+    __tests.push({ name: 'load error: ' + e.message, fn: () => { throw e.error || new Error(e.message); } });
+  });
+</script>
+<script src="rules.js"></script>
+<script>
+  if (typeof PacketRules === 'undefined') {
+    test('rules.js loads and defines PacketRules', () => { throw new Error('PacketRules is not defined'); });
+    window.PacketRules = null; // let rules.test.js fail cleanly
+  }
+</script>
+<script src="rules.test.js"></script>
+<script>
+  (function run() {
+    const list = document.getElementById('results');
+    let passed = 0, failed = 0;
+    for (const t of __tests) {
+      const li = document.createElement('li');
+      try {
+        t.fn();
+        passed++;
+        li.className = 'pass';
+        li.textContent = 'PASS  ' + t.name;
+      } catch (err) {
+        failed++;
+        li.className = 'fail';
+        li.textContent = 'FAIL  ' + t.name;
+        const pre = document.createElement('pre');
+        pre.textContent = err && err.message ? err.message : String(err);
+        li.appendChild(pre);
+      }
+      list.appendChild(li);
+    }
+    const s = document.getElementById('summary');
+    s.className = failed ? 'fail' : 'pass';
+    s.textContent = (failed ? 'FAILED' : 'ALL PASSED') + ': ' + passed + ' passed, ' + failed + ' failed';
+  })();
+</script>
+</body>
+</html>
